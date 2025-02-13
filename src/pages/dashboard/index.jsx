@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // material-ui
 import { Box, Grid, Typography, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions } from "@mui/material";
 import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
@@ -36,13 +36,85 @@ export default function DashboardDefault() {
   const [dateTime, setDateTime] = useState(dayjs());
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
-  console.log(userRole);
+  const userId = localStorage.getItem('userId');
 
   const locations = ["Carmy 1", "Carmy 2", "Sydney", "Marcus"];
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [trainingData, setTrainingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // if (loading) return <TableBody><TableRow><TableCell colSpan={6} align="center">Loading...</TableCell></TableRow></TableBody>;
+  // if (error) return <TableBody><TableRow><TableCell colSpan={6} align="center">Error: {error}</TableCell></TableRow></TableBody>;
+
+  const fetchTrainings = async () => {
+    try {
+      const response = await fetch(
+        "https://52d8-114-124-149-99.ngrok-free.app/api/training/training-list",
+        {
+          method: "GET",
+          headers: {
+            "ngrok-skip-browser-warning": "69420",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Fetched Data:", data);
+      setTrainingData(data.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTrainings();
+  }, []);
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    setSubmitting(true);
+    console.log(values);
+
+    try {
+      const response = await fetch('https://52d8-114-124-149-99.ngrok-free.app/api/training/request-training', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "ngrok-skip-browser-warning": "69420",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          trainingName: values.trainingName,
+          trainingDesc: values.trainingDesc,
+          trainingCapacity: values.trainingCapacity,
+          trainingClassroom: values.trainingClassroom,
+          trainingDateTime: values.trainingDateTime,
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      setErrors({ submit: error.message });
+    } finally {
+      setSubmitting(false);
+      handleClose()
+    }
+  };
 
   const validationSchema = Yup.object({
     trainingName: Yup.string().required("Nama Training wajib diisi"),
@@ -86,7 +158,7 @@ export default function DashboardDefault() {
 
             {/* Orders Table */}
             <MainCard sx={{ mt: 2 }} content={false}>
-              <OrdersTable />
+              <OrdersTable trainingData={trainingData}/>
             </MainCard>
           </Grid>
         </Grid>
@@ -106,11 +178,7 @@ export default function DashboardDefault() {
               description: "",
             }}
             validationSchema={validationSchema}
-            onSubmit={(values, { setSubmitting }) => {
-              console.log("Form Submitted:", values);
-              setSubmitting(false);
-              handleClose();
-            }}
+            onSubmit={handleSubmit}
           >
             {({ values, setFieldValue, isSubmitting }) => (
               <Form>

@@ -129,13 +129,15 @@ function OrderStatus({ status, align }) {
 OrderStatus.propTypes = { status: PropTypes.number.isRequired };
 
 // Main Table Component
-export default function OrderTable() {
+export default function OrderTable({trainingData}) {
   const order = 'asc';
   const orderBy = 'training_name';
 
   // State for Popup Dialog
   const [open, setOpen] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState(null);
+
+  const userRole = localStorage.getItem('userRole');
 
   // Open Detail Modal
   const handleOpen = (training) => {
@@ -160,42 +162,6 @@ export default function OrderTable() {
     );
   };
 
-  const [trainingData, setTrainingData] = useState([]);
-  const userName = localStorage.getItem('userName');
-  const userRole = localStorage.getItem('userRole');
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // if (loading) return <TableBody><TableRow><TableCell colSpan={6} align="center">Loading...</TableCell></TableRow></TableBody>;
-  // if (error) return <TableBody><TableRow><TableCell colSpan={6} align="center">Error: {error}</TableCell></TableRow></TableBody>;
-
-  useEffect(() => {
-    const fetchTrainings = async () => {
-      try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-
-        const formattedData = data.slice(0, 10).map((item, index) => ({
-          training_name: `Training ${index + 1}`,
-          training_trainer_name: `Trainer ${index + 1}`,
-          training_capacity: Math.floor(Math.random() * 30) + 10,
-          training_status: index % 2 === 0 ? "Approved" : "Pending",
-          training_location: `Location ${index + 1}`,
-          training_date: new Date().toISOString().split("T")[0], // Mock date
-        }));
-
-        setTrainingData(formattedData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTrainings();
-  }, []);
-
   return (
     <Box>
       <TableContainer
@@ -211,16 +177,16 @@ export default function OrderTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
-              <TableRow key={row.training_name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>{row.training_name}</TableCell>
+            {trainingData.map((row, index) => (
+              <TableRow key={row.trainingName} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell>{row.trainingName}</TableCell>
                 <TableCell align="center">{row.training_trainer_name}</TableCell>
-                <TableCell align="center">{row.training_capacity}</TableCell>
+                <TableCell align="center">{row.trainingCapacity}</TableCell>
                 <TableCell align="center">
-                  <OrderStatus status={row.training_status} align={'center'} />
+                  <OrderStatus status={row.trainingStatus} align={'center'} />
                 </TableCell>
-                <TableCell align="center">{row.training_location}</TableCell>
-                <TableCell align="center">{row.training_date}</TableCell>
+                <TableCell align="center">{row.trainingLocation}</TableCell>
+                <TableCell align="center">{row.trainingDate}</TableCell>
                 <TableCell align="center">
                   <Button variant="contained" color="primary" size="small" onClick={() => handleOpen(row)}>
                     Detail

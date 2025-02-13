@@ -57,11 +57,8 @@ export default function AuthLogin() {
         throw new Error(data.message || 'Something went wrong');
       }
 
-      console.log(data);
-      const updatedRole = data.data.role === "TEACHER" ? "TRAINER" : data.data.role;
-      console.log(updatedRole);
-
       localStorage.setItem('sessionToken', data.data.token);
+      localStorage.setItem('userId', data.data.userId);
       localStorage.setItem('userName', data.data.username);
       localStorage.setItem('userRole', updatedRole);
 
