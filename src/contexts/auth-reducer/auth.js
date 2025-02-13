@@ -1,5 +1,5 @@
 // action - state management
-import { REGISTER, LOGIN, LOGOUT } from './actions';
+import { LOGIN, LOGOUT } from './actions';
 
 // initial state
 export const initialState = {
@@ -12,20 +12,13 @@ export const initialState = {
 
 const auth = (state = initialState, action) => {
   switch (action.type) {
-    case REGISTER: {
-      const { user } = action.payload;
-      return {
-        ...state,
-        user
-      };
-    }
     case LOGIN: {
-      const { user } = action.payload;
+      const { user, role } = action.payload;
       return {
         ...state,
         isLoggedIn: true,
         isInitialized: true,
-        user
+        user: { ...user, role }
       };
     }
     case LOGOUT: {
