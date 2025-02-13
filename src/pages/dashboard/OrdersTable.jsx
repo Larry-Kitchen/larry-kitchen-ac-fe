@@ -64,6 +64,21 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "-";
+
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+
+
 function getComparator(order, orderBy) {
   return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -84,7 +99,7 @@ const headCells = [
   { id: 'trainingCapacity', align: 'center', label: 'Kapasitas' },
   { id: 'trainingStatus', align: 'center', label: 'Status' },
   { id: 'trainingLocation', align: 'center', label: 'Kelas' },
-  { id: 'trainingDate', align: 'center', label: 'Kelas' },
+  { id: 'trainingDate', align: 'center', label: 'Tanggal' },
   { id: 'Action', align: 'center', label: 'Aksi' }
 ];
 
@@ -111,9 +126,9 @@ OrderTableHead.propTypes = {
 // Status Indicator Component
 function OrderStatus({ status, align }) {
   const statusMap = {
-    0: { color: 'warning', title: 'Pending' },
-    1: { color: 'success', title: 'Approved' },
-    2: { color: 'error', title: 'Rejected' }
+    'PENDING': { color: 'warning', title: 'Pending' },
+    'OPEN': { color: 'success', title: 'Open' },
+    'DENIED': { color: 'error', title: 'Rejected' }
   };
 
   const { color, title } = statusMap[status] || { color: 'primary', title: 'None' };
@@ -129,19 +144,20 @@ function OrderStatus({ status, align }) {
 OrderStatus.propTypes = { status: PropTypes.number.isRequired };
 
 // Main Table Component
-export default function OrderTable({trainingData}) {
+export default function OrderTable({ trainingData }) {
   const order = 'asc';
   const orderBy = 'trainingName';
 
-  // State for Popup Dialog
   const [open, setOpen] = useState(false);
+  const [selectedTrainingId, setSelectedTrainingId] = useState(null);
   const [selectedTraining, setSelectedTraining] = useState(null);
 
   const userRole = localStorage.getItem('userRole');
 
   // Open Detail Modal
-  const handleOpen = (training) => {
+  const handleOpen = (training, trainingId) => {
     setSelectedTraining(training);
+    setSelectedTrainingId(trainingId)
     setOpen(true);
   };
 
@@ -149,6 +165,7 @@ export default function OrderTable({trainingData}) {
   const handleClose = () => {
     setOpen(false);
     setSelectedTraining(null);
+    setSelectedTrainingId(null);
   };
 
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -177,18 +194,18 @@ export default function OrderTable({trainingData}) {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {rows.map((row, index) => (
+            {trainingData.map((row, index) => (
               <TableRow key={row.trainingName} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell>{row.trainingName}</TableCell>
-                <TableCell align="center">{row.trainingTrainerName}</TableCell>
+                <TableCell align="center">{row.trainingTeacherName}</TableCell>
                 <TableCell align="center">{row.trainingCapacity}</TableCell>
                 <TableCell align="center">
                   <OrderStatus status={row.trainingStatus} align={'center'} />
                 </TableCell>
-                <TableCell align="center">{row.trainingLocation}</TableCell>
-                <TableCell align="center">{row.trainingDate}</TableCell>
+                <TableCell align="center">{row.trainingClass}</TableCell>
+                <TableCell align="center">{formatDate(row.trainingDate)}</TableCell>
                 <TableCell align="center">
-                  <Button variant="contained" color="primary" size="small" onClick={() => handleOpen(row)}>
+                  <Button variant="contained" color="primary" size="small" onClick={() => handleOpen(row, row.trainingId)}>
                     Detail
                   </Button>
                 </TableCell>
@@ -202,7 +219,7 @@ export default function OrderTable({trainingData}) {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>
           <Typography variant="h3" paddingTop={1}>
-            Training Detail
+            Detail Training
           </Typography>
         </DialogTitle>
         <DialogContent>
@@ -214,7 +231,7 @@ export default function OrderTable({trainingData}) {
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
               <Typography fontWeight="bold" paddingRight={1}>Nama Trainer:</Typography>
-              <Typography>{selectedTraining?.trainingTrainerName || '-'}</Typography>
+              <Typography>{selectedTraining?.trainingTeacherName || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
@@ -224,12 +241,12 @@ export default function OrderTable({trainingData}) {
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
               <Typography fontWeight="bold" paddingRight={1}>Kelas:</Typography>
-              <Typography>{selectedTraining?.trainingLocation || '-'}</Typography>
+              <Typography>{selectedTraining?.trainingClass || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
               <Typography fontWeight="bold" paddingRight={1}>Date:</Typography>
-              <Typography>{selectedTraining?.trainingDate || '-'}</Typography>
+              <Typography>{formatDate(selectedTraining?.trainingDate) || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
