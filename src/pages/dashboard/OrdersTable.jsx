@@ -152,7 +152,7 @@ export default function OrderTable({ trainingData }) {
   const [selectedTrainingId, setSelectedTrainingId] = useState(null);
   const [selectedTraining, setSelectedTraining] = useState(null);
   const userToken = localStorage.getItem('sessionToken');
-
+  const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
 
   // Open Detail Modal
@@ -356,13 +356,21 @@ export default function OrderTable({ trainingData }) {
           </Box>
         </DialogContent>
         <DialogActions sx={{ padding: '4px 24px 20px 24px' }}>
-          {userRole !== 'TEACHER' && selectedTraining?.trainingStatus === 'PENDING' && (
+          {userRole === 'MANAGER' && selectedTraining?.trainingStatus === 'PENDING' && (
             <>
               <Button onClick={() => handleUpdateStatus('Reject')} variant="contained" color="error">
                 Reject
               </Button>
               <Button onClick={() => handleUpdateStatus('Approve')} variant="contained" color="primary">
                 Approve
+              </Button>
+            </>
+          )}
+
+          {userRole === 'TEACHER' && selectedTraining?.trainingTeacherName === userName && selectedTraining?.trainingStatus !== 'REJECTED' && (
+            <>
+              <Button onClick={handleClose} variant="contained" color="error">
+                Cancel
               </Button>
             </>
           )}

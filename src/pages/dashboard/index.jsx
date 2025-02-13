@@ -93,7 +93,7 @@ export default function DashboardDefault() {
 
   useEffect(() => {
     fetchTrainings();
-  }, []);
+  }, [open]);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setSubmitting(true);
@@ -128,32 +128,6 @@ export default function DashboardDefault() {
     } finally {
       setSubmitting(false);
       handleClose()
-    }
-  };
-
-  const handleApprove = async (trainingId) => {
-    try {
-      const response = await fetch(`https://52d8-114-124-149-99.ngrok-free.app/api/training/${trainingId}/approve`, {
-        method: 'PUT',
-        headers: {
-          "Authorization": `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420"
-        },
-        body: JSON.stringify({ trainingStatus: "approved" })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to approve training');
-      }
-
-      console.log("Training approved successfully", data);
-      alert("Training has been approved!");
-    } catch (error) {
-      console.error("Error approving training:", error);
-      alert(`Error: ${error.message}`);
     }
   };
 

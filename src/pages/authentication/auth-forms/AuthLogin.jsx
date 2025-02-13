@@ -53,18 +53,19 @@ export default function AuthLogin() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+      if (!response.ok || data.error) {
+        throw new Error(data.message || 'Invalid credentials');
       }
 
       localStorage.setItem('sessionToken', data.token);
       localStorage.setItem('userId', data.data.userId);
       localStorage.setItem('userName', data.data.username);
       localStorage.setItem('userRole', data.data.role);
+
+      navigate('/dashboard');
     } catch (error) {
       setErrors({ submit: error.message });
     } finally {
-      navigate('/dashboard');
       setSubmitting(false);
     }
   };
