@@ -37,6 +37,7 @@ export default function DashboardDefault() {
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
+  const userToken = localStorage.getItem('sessionToken');
 
   const locations = ["Carmy 1", "Carmy 2", "Sydney", "Marcus"];
   const [open, setOpen] = useState(false);
@@ -58,7 +59,9 @@ export default function DashboardDefault() {
         {
           method: "GET",
           headers: {
-            "ngrok-skip-browser-warning": "69420",
+            "Authorization" : `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420"
           },
         }
       );
@@ -90,8 +93,9 @@ export default function DashboardDefault() {
       const response = await fetch('https://52d8-114-124-149-99.ngrok-free.app/api/training/request-training', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          "ngrok-skip-browser-warning": "69420",
+          "Authorization" : `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420"
         },
         body: JSON.stringify({
           userId: userId,
@@ -189,13 +193,13 @@ export default function DashboardDefault() {
                     {/* Training Name */}
                     <Box>
                       <Field name="trainingName" as={TextField} label="Nama Training" variant="outlined" fullWidth />
-                      <ErrorMessage name="trainingName" component="div" style={{ color: "red", fontSize: "0.7rem" }} />
+                      <ErrorMessage name="trainingName" component="div" style={{ color: "red", fontSize: "0.7rem", marginTop: "0.25rem" }} />
                     </Box>
 
                     {/* Capacity */}
                     <Box>
                       <Field name="capacity" as={TextField} label="Kapasitas Training" type="number" variant="outlined" fullWidth />
-                      <ErrorMessage name="capacity" component="div" style={{ color: "red", fontSize: "0.7rem" }} />
+                      <ErrorMessage name="capacity" component="div" style={{ color: "red", fontSize: "0.7rem", marginTop: "0.25rem" }} />
                     </Box>
 
                     {/* Location */}
@@ -215,24 +219,26 @@ export default function DashboardDefault() {
                           ))}
                         </Field>
                       </FormControl>
-                      <ErrorMessage name="location" component="div" style={{ color: "red", fontSize: "0.7rem" }} />
+                      <ErrorMessage name="location" component="div" style={{ color: "red", fontSize: "0.7rem", marginTop: "0.25rem" }} />
                     </Box>
 
                     {/* DateTime Picker */}
                     <Box>
-                      <DateTimePicker
-                        label="Waktu Training"
-                        value={values.dateTime}
-                        onChange={(newValue) => setFieldValue("dateTime", newValue)}
-                        renderInput={(params) => <TextField {...params} fullWidth />}
-                      />
-                      <ErrorMessage name="dateTime" component="div" style={{ color: "red", fontSize: "0.7rem" }} />
+                      <FormControl fullWidth>
+                        <DateTimePicker
+                          label="Waktu Training"
+                          value={values.dateTime}
+                          onChange={(newValue) => setFieldValue("dateTime", newValue)}
+                          renderInput={(params) => <TextField {...params} fullWidth />}
+                        />
+                        <ErrorMessage name="dateTime" component="div" style={{ color: "red", fontSize: "0.7rem", marginTop: "0.25rem" }} />
+                      </FormControl>
                     </Box>
 
                     {/* Description */}
                     <Box>
                       <Field name="description" as={TextField} label="Deskripsi Training" variant="outlined" fullWidth multiline rows={3} />
-                      <ErrorMessage name="description" component="div" style={{ color: "red", fontSize: "0.7rem" }} />
+                      <ErrorMessage name="description" component="div" style={{ color: "red", fontSize: "0.7rem", marginTop: "0.25rem" }} />
                     </Box>
                   </Box>
                 </DialogContent>

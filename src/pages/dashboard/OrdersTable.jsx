@@ -24,23 +24,23 @@ import {
 import Dot from 'components/@extended/Dot';
 
 function createData(
-  training_name,
-  training_trainer_name,
-  training_capacity,
-  training_status,
-  training_location,
-  training_date,
-  training_description,
+  trainingName,
+  trainingTrainerName,
+  trainingCapacity,
+  trainingStatus,
+  trainingLocation,
+  trainingDate,
+  trainingDescription,
   students
 ) {
   return {
-    training_name,
-    training_trainer_name,
-    training_capacity,
-    training_status,
-    training_location,
-    training_date,
-    training_description,
+    trainingName,
+    trainingTrainerName,
+    trainingCapacity,
+    trainingStatus,
+    trainingLocation,
+    trainingDate,
+    trainingDescription,
     students
   };
 }
@@ -79,12 +79,12 @@ function stableSort(array, comparator) {
 
 // Table Headers
 const headCells = [
-  { id: 'training_name', align: 'left', label: 'Nama Training' },
-  { id: 'training_trainer_name', align: 'center', label: 'Nama Trainer' },
-  { id: 'training_capacity', align: 'center', label: 'Kapasitas' },
-  { id: 'training_status', align: 'center', label: 'Status' },
-  { id: 'training_location', align: 'center', label: 'Kelas' },
-  { id: 'training_date', align: 'center', label: 'Kelas' },
+  { id: 'trainingName', align: 'left', label: 'Nama Training' },
+  { id: 'trainingTrainerName', align: 'center', label: 'Nama Trainer' },
+  { id: 'trainingCapacity', align: 'center', label: 'Kapasitas' },
+  { id: 'trainingStatus', align: 'center', label: 'Status' },
+  { id: 'trainingLocation', align: 'center', label: 'Kelas' },
+  { id: 'trainingDate', align: 'center', label: 'Kelas' },
   { id: 'Action', align: 'center', label: 'Aksi' }
 ];
 
@@ -131,7 +131,7 @@ OrderStatus.propTypes = { status: PropTypes.number.isRequired };
 // Main Table Component
 export default function OrderTable({trainingData}) {
   const order = 'asc';
-  const orderBy = 'training_name';
+  const orderBy = 'trainingName';
 
   // State for Popup Dialog
   const [open, setOpen] = useState(false);
@@ -177,10 +177,10 @@ export default function OrderTable({trainingData}) {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {trainingData.map((row, index) => (
+            {rows.map((row, index) => (
               <TableRow key={row.trainingName} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell>{row.trainingName}</TableCell>
-                <TableCell align="center">{row.training_trainer_name}</TableCell>
+                <TableCell align="center">{row.trainingTrainerName}</TableCell>
                 <TableCell align="center">{row.trainingCapacity}</TableCell>
                 <TableCell align="center">
                   <OrderStatus status={row.trainingStatus} align={'center'} />
@@ -198,7 +198,7 @@ export default function OrderTable({trainingData}) {
         </Table>
       </TableContainer>
 
-      {/* TODO: Add Popup Dialog Component Here */}
+      {/* Popup Dialog Component */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>
           <Typography variant="h3" paddingTop={1}>
@@ -208,45 +208,44 @@ export default function OrderTable({trainingData}) {
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Nama Training :</Typography>
-              <Typography>{selectedTraining?.training_name || '-'}</Typography>
+              <Typography fontWeight="bold" paddingRight={1}>Nama Training :</Typography>
+              <Typography>{selectedTraining?.trainingName || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Nama Trainer:</Typography>
-              <Typography>{selectedTraining?.training_trainer_name || '-'}</Typography>
+              <Typography fontWeight="bold" paddingRight={1}>Nama Trainer:</Typography>
+              <Typography>{selectedTraining?.trainingTrainerName || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Kapasitas:</Typography>
-              <Typography>{selectedTraining?.training_capacity || '-'}</Typography>
+              <Typography fontWeight="bold" paddingRight={1}>Kapasitas:</Typography>
+              <Typography>{selectedTraining?.trainingCapacity || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Kelas:</Typography>
-              <Typography>{selectedTraining?.training_location || '-'}</Typography>
+              <Typography fontWeight="bold" paddingRight={1}>Kelas:</Typography>
+              <Typography>{selectedTraining?.trainingLocation || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Date:</Typography>
-              <Typography>{selectedTraining?.training_date || '-'}</Typography>
+              <Typography fontWeight="bold" paddingRight={1}>Date:</Typography>
+              <Typography>{selectedTraining?.trainingDate || '-'}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: '' }}>
-              <Typography paddingRight={1}>Status:</Typography>
-              <OrderStatus status={selectedTraining?.training_status} align={'left'} />
+              <Typography fontWeight="bold" paddingRight={1}>Status:</Typography>
+              <OrderStatus status={selectedTraining?.trainingStatus} align={'left'} />
             </Box>
 
             <Box sx={{ display: '', justifyContent: '' }}>
-              <Typography paddingBottom={1}>Deskripsi:</Typography>
+              <Typography fontWeight="bold" paddingBottom={1}>Deskripsi:</Typography>
               <TextField
-                label="Deskripsi"
                 disabled
                 variant="outlined"
                 fullWidth
                 multiline
                 rows={3}
-                value={selectedTraining?.training_description}
+                value={selectedTraining?.trainingDescription}
                 InputProps={{
                   sx: { color: 'black' }
                 }}
@@ -257,7 +256,7 @@ export default function OrderTable({trainingData}) {
                   '& .MuiOutlinedInput-root': {
                     '&.Mui-disabled': {
                       '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: 'rgba(0, 0, 0, 0.4)'
+                        borderColor: 'rgba(0, 0, 0, 0.2)'
                       }
                     }
                   }
@@ -266,7 +265,7 @@ export default function OrderTable({trainingData}) {
             </Box>
 
             <Box sx={{ mt: 2 }}>
-              <Typography variant="h6">Student List:</Typography>
+              <Typography fontWeight="bold" variant="h6">Student List:</Typography>
               <TableContainer>
                 <Table size="small">
                   <TableHead>
@@ -282,7 +281,6 @@ export default function OrderTable({trainingData}) {
                     {selectedTraining?.students?.length > 0 ? (
                       selectedTraining.students.map((student) => (
                         <TableRow key={student.student_id}>
-                          
                           <TableCell>{student.student_id}</TableCell>
                           <TableCell>{student.student_name}</TableCell>
                           {userRole !== 'MANAGER' && (
