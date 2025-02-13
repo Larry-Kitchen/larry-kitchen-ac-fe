@@ -1,43 +1,68 @@
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-// material-ui
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 
-// project import
+// Material-UI Components
+import {
+  Box,
+  Button,
+  Link,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Checkbox
+} from '@mui/material';
+
+// Project Components
 import Dot from 'components/@extended/Dot';
 
-function createData(training_no, training_name, training_capacity, training_status, training_location) {
-  return { training_no, training_name, training_capacity, training_status, training_location };
+function createData(
+  training_name,
+  training_trainer_name,
+  training_capacity,
+  training_status,
+  training_location,
+  training_date,
+  training_description,
+  students
+) {
+  return {
+    training_name,
+    training_trainer_name,
+    training_capacity,
+    training_status,
+    training_location,
+    training_date,
+    training_description,
+    students
+  };
 }
 
 const rows = [
-  createData(84564564, 'Camera Lens', 40, 2, 'Carmy 1'),
-  createData(98764564, 'Laptop', 30, 0, 'Sydney'),
-  createData(98756325, 'Mobile', 20, 1, 'Marcus'),
-  createData(98652366, 'Handset', 10, 1, 'Carmy 2'),
-  createData(13286564, 'Computer Accessories', 25, 1, 'Carmy 2'),
-  createData(86739658, 'TV', 10, 0, 'Marcus'),
-  createData(13256498, 'Keyboard', 15, 2, 'Sydney'),
-  createData(98753263, 'Mouse', 20, 2, 'Sydney'),
-  createData(98753275, 'Desktop', 10, 1, 'Carmy 1'),
-  createData(98753291, 'Chair', 10, 0, 'Marcus')
+  createData('Camera Lens', 'larry', 40, 2, 'Carmy 1', '12 Jan 2002', 'ini detail 1', [
+    { student_id: 'S001', student_name: 'larry 1' },
+    { student_id: 'S002', student_name: 'larry 2' }
+  ]),
+  createData('Laptop', 'larry', 30, 0, 'Sydney', '2 Feb 2002', 'ini detail 2', [
+    { student_id: 'S003', student_name: 'larry 3' },
+    { student_id: 'S004', student_name: 'larry 4' }
+  ]),
+  createData('Mobile', 'larry', 20, 1, 'Marcus', '2 Jan 2002', 'ini detail 3', [{ student_id: 'S005', student_name: 'larry 5' }])
 ];
 
+// Sorting Functions
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
   return 0;
 }
 
@@ -49,60 +74,29 @@ function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
+    return order !== 0 ? order : a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
 }
 
+// Table Headers
 const headCells = [
-  {
-    id: 'training_no',
-    align: 'left',
-    disablePadding: false,
-    label: 'Training No.'
-  },
-  {
-    id: 'training_name',
-    align: 'left',
-    disablePadding: true,
-    label: 'Training Name'
-  },
-  {
-    id: 'training_capacity',
-    align: 'center',
-    disablePadding: false,
-    label: 'Capacity'
-  },
-  {
-    id: 'training_status',
-    align: 'left',
-    disablePadding: false,
-    label: 'Status'
-  },
-  {
-    id: 'training_location',
-    align: 'right',
-    disablePadding: false,
-    label: 'Location'
-  }
+  { id: 'training_name', align: 'left', label: 'Nama Training' },
+  { id: 'training_trainer_name', align: 'center', label: 'Nama Trainer' },
+  { id: 'training_capacity', align: 'center', label: 'Kapasitas' },
+  { id: 'training_status', align: 'center', label: 'Status' },
+  { id: 'training_location', align: 'center', label: 'Kelas' },
+  { id: 'training_date', align: 'center', label: 'Kelas' },
+  { id: 'Action', align: 'center', label: 'Aksi' }
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
-
+// Table Header Component
 function OrderTableHead({ order, orderBy }) {
   return (
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.align}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
+          <TableCell key={headCell.id} align={headCell.align}>
             {headCell.label}
           </TableCell>
         ))}
@@ -111,41 +105,62 @@ function OrderTableHead({ order, orderBy }) {
   );
 }
 
-function OrderStatus({ status }) {
-  let color;
-  let title;
+OrderTableHead.propTypes = {
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired
+};
 
-  switch (status) {
-    case 0:
-      color = 'warning';
-      title = 'Pending';
-      break;
-    case 1:
-      color = 'success';
-      title = 'Approved';
-      break;
-    case 2:
-      color = 'error';
-      title = 'Rejected';
-      break;
-    default:
-      color = 'primary';
-      title = 'None';
-  }
+// Status Indicator Component
+function OrderStatus({ status, align }) {
+  const statusMap = {
+    0: { color: 'warning', title: 'Pending' },
+    1: { color: 'success', title: 'Approved' },
+    2: { color: 'error', title: 'Rejected' }
+  };
+
+  const { color, title } = statusMap[status] || { color: 'primary', title: 'None' };
 
   return (
-    <Stack direction="row" spacing={1} alignItems="center">
+    <Stack direction="row" spacing={1} alignItems="center" justifyContent={align} width="100%">
       <Dot color={color} />
       <Typography>{title}</Typography>
     </Stack>
   );
 }
 
-// ==============================|| ORDER TABLE ||============================== //
+OrderStatus.propTypes = { status: PropTypes.number.isRequired };
 
+// Main Table Component
 export default function OrderTable() {
   const order = 'asc';
-  const orderBy = 'training_no';
+  const orderBy = 'training_name';
+
+  // State for Popup Dialog
+  const [open, setOpen] = useState(false);
+  const [selectedTraining, setSelectedTraining] = useState(null);
+
+  // Open Detail Modal
+  const handleOpen = (training) => {
+    setSelectedTraining(training);
+    setOpen(true);
+  };
+
+  // Close Detail Modal
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedTraining(null);
+  };
+
+  const [selectedStudents, setSelectedStudents] = useState([]);
+
+  const handleStudentToggle = (studentId) => {
+    setSelectedStudents(
+      (prevSelected) =>
+        prevSelected.includes(studentId)
+          ? prevSelected.filter((id) => id !== studentId) // Remove if already selected
+          : [...prevSelected, studentId] // Add if not selected
+    );
+  };
 
   return (
     <Box>
@@ -162,36 +177,145 @@ export default function OrderTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row.training_no}
-                >
-                  <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.training_no}</Link>
-                  </TableCell>
-                  <TableCell>{row.training_name}</TableCell>
-                  <TableCell align="center">{row.training_capacity}</TableCell>
-                  <TableCell>
-                    <OrderStatus status={row.training_status} />
-                  </TableCell>
-                  <TableCell align="right">{row.training_location}</TableCell>
-                </TableRow>
-              );
-            })}
+            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
+              <TableRow key={row.training_name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell>{row.training_name}</TableCell>
+                <TableCell align="center">{row.training_trainer_name}</TableCell>
+                <TableCell align="center">{row.training_capacity}</TableCell>
+                <TableCell align="center">
+                  <OrderStatus status={row.training_status} align={'center'} />
+                </TableCell>
+                <TableCell align="center">{row.training_location}</TableCell>
+                <TableCell align="center">{row.training_date}</TableCell>
+                <TableCell align="center">
+                  <Button variant="contained" color="primary" size="small" onClick={() => handleOpen(row)}>
+                    Detail
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* TODO: Add Popup Dialog Component Here */}
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <DialogTitle>
+          <Typography variant="h3" paddingTop={1}>
+            Training Detail
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Nama Training :</Typography>
+              <Typography>{selectedTraining?.training_name || '-'}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Nama Trainer:</Typography>
+              <Typography>{selectedTraining?.training_trainer_name || '-'}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Kapasitas:</Typography>
+              <Typography>{selectedTraining?.training_capacity || '-'}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Kelas:</Typography>
+              <Typography>{selectedTraining?.training_location || '-'}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Date:</Typography>
+              <Typography>{selectedTraining?.training_date || '-'}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: '' }}>
+              <Typography paddingRight={1}>Status:</Typography>
+              <OrderStatus status={selectedTraining?.training_status} align={'left'} />
+            </Box>
+
+            <Box sx={{ display: '', justifyContent: '' }}>
+              <Typography paddingBottom={1}>Deskripsi:</Typography>
+              <TextField
+                label="Deskripsi"
+                disabled
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={3}
+                value={selectedTraining?.training_description}
+                InputProps={{
+                  sx: { color: 'black' }
+                }}
+                sx={{
+                  '& .MuiInputBase-input.Mui-disabled': {
+                    WebkitTextFillColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-disabled': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(0, 0, 0, 0.4)'
+                      }
+                    }
+                  }
+                }}
+              />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h6">Student List:</Typography>
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Check</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {selectedTraining?.students?.length > 0 ? (
+                      selectedTraining.students.map((student) => (
+                        <TableRow key={student.student_id}>
+                          
+                          <TableCell>{student.student_id}</TableCell>
+                          <TableCell>{student.student_name}</TableCell>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedStudents.includes(student.student_id)}
+                              onChange={() => handleStudentToggle(student.student_id)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center">
+                          No students available
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ padding: '4px 24px 20px 24px' }}>
+          <Button onClick={handleClose} variant="contained" color="error">
+            Reject
+          </Button>
+          <Button onClick={handleClose} variant="contained" color="primary">
+            Approve
+          </Button>
+          <Button onClick={handleClose} variant="contained" color="primary">
+            Done
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
-
-OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
-
-OrderStatus.propTypes = { status: PropTypes.number };
