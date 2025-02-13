@@ -40,10 +40,16 @@ function a11yProps(index) {
   };
 }
 
+function formatToTitleCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
   const theme = useTheme();
+  const userName = localStorage.getItem('userName');
+  const userRole = localStorage.getItem('userRole');
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -85,7 +91,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+            {userName}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -118,9 +124,9 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">John Doe</Typography>
+                            <Typography variant="h6">{userName}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                              { userRole ? formatToTitleCase(userRole) : '' }
                             </Typography>
                           </Stack>
                         </Stack>

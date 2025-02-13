@@ -12,11 +12,11 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
-  path: '/',
+  path: '/dashboard',
   element: <Dashboard />,
   children: [
     {
-      path: '/',
+      path: '/dashboard',
       element: <DashboardDefault />
     }
   ]
