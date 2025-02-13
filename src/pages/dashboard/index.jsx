@@ -110,14 +110,15 @@ export default function DashboardDefault() {
         body: JSON.stringify({
           userId: userId,
           trainingName: values.trainingName,
-          trainingDesc: values.trainingDesc,
-          trainingCapacity: values.trainingCapacity,
-          trainingClassroom: values.trainingClassroom,
-          trainingDateTime: values.trainingDateTime,
+          trainingDesc: values.description,
+          trainingCapacity: values.capacity,
+          trainingClass: values.location,
+          trainingDate: values.dateTime,
         })
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Something went wrong');

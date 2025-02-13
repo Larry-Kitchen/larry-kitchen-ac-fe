@@ -30,7 +30,7 @@ function createData(
   trainingStatus,
   trainingLocation,
   trainingDate,
-  trainingDescription,
+  trainingDesc,
   students
 ) {
   return {
@@ -40,7 +40,7 @@ function createData(
     trainingStatus,
     trainingLocation,
     trainingDate,
-    trainingDescription,
+    trainingDesc,
     students
   };
 }
@@ -151,14 +151,15 @@ export default function OrderTable({ trainingData }) {
   const [open, setOpen] = useState(false);
   const [selectedTrainingId, setSelectedTrainingId] = useState(null);
   const [selectedTraining, setSelectedTraining] = useState(null);
+  const userToken = localStorage.getItem('sessionToken');
 
   const userRole = localStorage.getItem('userRole');
 
   // Open Detail Modal
   const handleOpen = (training, trainingId) => {
+    setOpen(true);
     setSelectedTraining(training);
     setSelectedTrainingId(trainingId)
-    setOpen(true);
   };
 
   // Close Detail Modal
@@ -166,6 +167,37 @@ export default function OrderTable({ trainingData }) {
     setOpen(false);
     setSelectedTraining(null);
     setSelectedTrainingId(null);
+  };
+
+  const handleUpdateStatus = async (status) => {
+    console.log(status);
+    console.log(userToken);
+    console.log(selectedTrainingId);
+    try {
+      const response = await fetch(`https://52d8-114-124-149-99.ngrok-free.app/api/training/respond-request`, {
+        method: 'PUT',
+        headers: {
+          "Authorization": `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420"
+        },
+        body: JSON.stringify({
+          trainingId: selectedTrainingId,
+          respondType: status
+        })
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update status');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      handleClose()
+    }
   };
 
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -262,7 +294,7 @@ export default function OrderTable({ trainingData }) {
                 fullWidth
                 multiline
                 rows={3}
-                value={selectedTraining?.trainingDescription}
+                value={selectedTraining?.trainingDesc}
                 InputProps={{
                   sx: { color: 'black' }
                 }}
@@ -324,19 +356,22 @@ export default function OrderTable({ trainingData }) {
           </Box>
         </DialogContent>
         <DialogActions sx={{ padding: '4px 24px 20px 24px' }}>
-          {userRole !== 'TRAINER' && (
+          {userRole !== 'TEACHER' && selectedTraining?.trainingStatus === 'PENDING' && (
             <>
-              <Button onClick={handleClose} variant="contained" color="error">
+              <Button onClick={() => handleUpdateStatus('Reject')} variant="contained" color="error">
                 Reject
               </Button>
-              <Button onClick={handleClose} variant="contained" color="primary">
+              <Button onClick={() => handleUpdateStatus('Approve')} variant="contained" color="primary">
                 Approve
               </Button>
             </>
           )}
-          <Button onClick={handleClose} variant="contained" color="primary">
-            Done
-          </Button>
+
+          {selectedTraining?.trainingStatus === 'OPEN' && (
+            <Button onClick={handleClose()} variant="contained" color="primary">
+              End Training
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Box>
