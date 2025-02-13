@@ -128,7 +128,8 @@ function OrderStatus({ status, align }) {
   const statusMap = {
     'PENDING': { color: 'warning', title: 'Pending' },
     'OPEN': { color: 'success', title: 'Open' },
-    'DENIED': { color: 'error', title: 'Rejected' }
+    'DENIED': { color: 'error', title: 'Rejected' },
+    'DONE': { color: 'secondary', title: 'Done' }
   };
 
   const { color, title } = statusMap[status] || { color: 'primary', title: 'None' };
@@ -377,9 +378,6 @@ export default function OrderTable({ trainingData }) {
           )}
 
           {selectedTraining?.trainingStatus === 'OPEN' && (
-            // <Button onClick={handleClose} variant="contained" color="primary">
-            //   End Training
-            // </Button>
             <Button onClick={() => handleUpdateStatus('Ended')} variant="contained" color="primary">
               End Training
             </Button>
