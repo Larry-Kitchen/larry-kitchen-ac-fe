@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom';
 import { lazy } from 'react';
 
 // project import
@@ -13,6 +14,10 @@ const LoginRoutes = {
   path: '/',
   element: <MinimalLayout />,
   children: [
+    {
+      path: '/',
+      element: <Navigate to="/dashboard" replace />
+    },
     {
       path: '/login',
       element: <AuthLogin />

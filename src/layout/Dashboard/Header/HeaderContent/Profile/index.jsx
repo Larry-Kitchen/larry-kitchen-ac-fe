@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -33,13 +34,6 @@ function TabPanel({ children, value, index, ...other }) {
   );
 }
 
-function a11yProps(index) {
-  return {
-    id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
-  };
-}
-
 function formatToTitleCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
@@ -48,6 +42,7 @@ function formatToTitleCase(str) {
 
 export default function Profile() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
 
@@ -55,6 +50,17 @@ export default function Profile() {
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("sessionToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem('sessionToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+
+    navigate("/login");
   };
 
   const handleClose = (event) => {
@@ -133,7 +139,7 @@ export default function Profile() {
                       </Grid>
                       <Grid item>
                         <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                          <IconButton size="large" sx={{ color: 'text.primary' }} onClick={handleLogout}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>
