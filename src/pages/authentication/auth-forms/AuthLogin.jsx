@@ -57,15 +57,14 @@ export default function AuthLogin() {
         throw new Error(data.message || 'Something went wrong');
       }
 
-      localStorage.setItem('sessionToken', data.data.token);
+      localStorage.setItem('sessionToken', data.token);
       localStorage.setItem('userId', data.data.userId);
       localStorage.setItem('userName', data.data.username);
-      localStorage.setItem('userRole', updatedRole);
-
-      navigate('/dashboard');
+      localStorage.setItem('userRole', data.data.role);
     } catch (error) {
       setErrors({ submit: error.message });
     } finally {
+      navigate('/dashboard');
       setSubmitting(false);
     }
   };
