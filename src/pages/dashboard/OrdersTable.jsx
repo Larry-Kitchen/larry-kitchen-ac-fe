@@ -157,6 +157,7 @@ export default function OrderTable({ trainingData }) {
 
   // Open Detail Modal
   const handleOpen = (training, trainingId) => {
+    // console.log(training, trainingId)
     setOpen(true);
     setSelectedTraining(training);
     setSelectedTrainingId(trainingId)
@@ -376,7 +377,10 @@ export default function OrderTable({ trainingData }) {
           )}
 
           {selectedTraining?.trainingStatus === 'OPEN' && (
-            <Button onClick={handleClose()} variant="contained" color="primary">
+            // <Button onClick={handleClose} variant="contained" color="primary">
+            //   End Training
+            // </Button>
+            <Button onClick={() => handleUpdateStatus('Ended')} variant="contained" color="primary">
               End Training
             </Button>
           )}
