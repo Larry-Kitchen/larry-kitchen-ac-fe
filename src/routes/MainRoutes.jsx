@@ -30,18 +30,25 @@ import Dashboard from 'layout/Dashboard';
 
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 
-// Authentication check function
 const isAuthenticated = () => !!localStorage.getItem('sessionToken');
+
+const ProtectedRoute = ({ children }) => {
+  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+};
 
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
   path: '/dashboard',
-  element: isAuthenticated() ? <Dashboard /> : <Navigate to="/login" replace />,
+  element: (
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  ),
   children: [
     {
-      path: '/dashboard',
-      element: isAuthenticated() ? <DashboardDefault /> : <Navigate to="/login" replace />
+      index: true,
+      element: <DashboardDefault />
     }
   ]
 };

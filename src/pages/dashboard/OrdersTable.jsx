@@ -382,7 +382,7 @@ export default function OrderTable({ trainingData }) {
           {userRole === 'TEACHER' && selectedTraining?.trainingTeacherName === userName && selectedTraining?.trainingStatus !== 'DONE' && selectedTraining?.trainingStatus !== 'DENIED' && (
             <>
               <Button onClick={handleClose} variant="contained" color="error">
-                Cancel
+                Cancel Training
               </Button>
             </>
           )}

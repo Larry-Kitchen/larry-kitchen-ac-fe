@@ -42,9 +42,7 @@ export default function AuthLogin() {
     try {
       const response = await fetch('https://52d8-114-124-149-99.ngrok-free.app/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: values.username,
           password: values.password
@@ -53,14 +51,16 @@ export default function AuthLogin() {
 
       const data = await response.json();
 
-      if (!response.ok || data.error) {
+      if (!response.ok || data.error || !data.data) {
         throw new Error(data.message || 'Invalid credentials');
       }
 
+      const { userId, username, role } = data.data || {};
+
       localStorage.setItem('sessionToken', data.token);
-      localStorage.setItem('userId', data.data.userId);
-      localStorage.setItem('userName', data.data.username);
-      localStorage.setItem('userRole', data.data.role);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userName', username);
+      localStorage.setItem('userRole', role);
 
       navigate('/dashboard');
     } catch (error) {
@@ -68,7 +68,7 @@ export default function AuthLogin() {
     } finally {
       setSubmitting(false);
     }
-  };
+};
 
   return (
     <>
