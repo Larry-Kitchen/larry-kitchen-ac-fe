@@ -206,9 +206,6 @@ export default function OrderTable({ trainingData }) {
   };
 
   const handleUpdateStatus = async (status) => {
-    console.log(status);
-    console.log(userToken);
-    console.log(selectedTrainingId);
     try {
       const response = await fetch(`https://52d8-114-124-149-99.ngrok-free.app/api/training/respond-request`, {
         method: 'PUT',
@@ -229,6 +226,8 @@ export default function OrderTable({ trainingData }) {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to update status');
       }
+
+      window.location.reload();
     } catch (error) {
       console.error(error);
     } finally {
