@@ -156,9 +156,19 @@ export default function OrderTable({ trainingData }) {
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
 
+  const statusPriority = {
+    'OPEN': 1,
+    'PENDING': 2,
+    'DENIED': 3,
+    'DONE': 4
+  };
+
+  const sortedTrainingData = [...trainingData].sort((a, b) => {
+    return statusPriority[a.trainingStatus] - statusPriority[b.trainingStatus];
+  });
+
   // Open Detail Modal
   const handleOpen = (training, trainingId) => {
-    // console.log(training, trainingId)
     setOpen(true);
     setSelectedTraining(training);
     setSelectedTrainingId(trainingId)
@@ -228,7 +238,7 @@ export default function OrderTable({ trainingData }) {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {trainingData.map((row, index) => (
+            {sortedTrainingData.map((row, index) => (
               <TableRow key={row.trainingName} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                 <TableCell>{row.trainingName}</TableCell>
                 <TableCell align="center">{row.trainingTeacherName}</TableCell>
@@ -369,7 +379,7 @@ export default function OrderTable({ trainingData }) {
             </>
           )}
 
-          {userRole === 'TEACHER' && selectedTraining?.trainingTeacherName === userName && selectedTraining?.trainingStatus !== 'REJECTED' && (
+          {userRole === 'TEACHER' && selectedTraining?.trainingTeacherName === userName && selectedTraining?.trainingStatus !== 'DONE' && selectedTraining?.trainingStatus !== 'DENIED' && (
             <>
               <Button onClick={handleClose} variant="contained" color="error">
                 Cancel
