@@ -152,6 +152,7 @@ export default function OrderTable({ trainingData }) {
   const [open, setOpen] = useState(false);
   const [selectedTrainingId, setSelectedTrainingId] = useState(null);
   const [selectedTraining, setSelectedTraining] = useState(null);
+  const [studentList, setStudentList] = useState(null);
   const userToken = localStorage.getItem('sessionToken');
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
@@ -167,11 +168,34 @@ export default function OrderTable({ trainingData }) {
     return statusPriority[a.trainingStatus] - statusPriority[b.trainingStatus];
   });
 
-  // Open Detail Modal
-  const handleOpen = (training, trainingId) => {
+  const handleOpen = async (training, trainingId) => {
     setOpen(true);
     setSelectedTraining(training);
     setSelectedTrainingId(trainingId)
+    console.log(userToken)
+    try {
+      const response = await fetch(`https://52d8-114-124-149-99.ngrok-free.app/api/enrollment/student-list/${trainingId}`, {
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420"
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch student list");
+      }
+
+      const data = await response.json();
+      console.log("Fetched student list:", data);
+
+      setStudentList(data?.data || []);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      setStudentList([]); // Fallback to an empty list if there's an error
+    }
+    console.log(studentList)
   };
 
   // Close Detail Modal
@@ -339,19 +363,12 @@ export default function OrderTable({ trainingData }) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {selectedTraining?.students?.length > 0 ? (
-                      selectedTraining.students.map((student) => (
-                        <TableRow key={student.student_id}>
-                          <TableCell>{student.student_id}</TableCell>
-                          <TableCell>{student.student_name}</TableCell>
-                          {userRole !== 'MANAGER' && (
-                            <TableCell>
-                              <Checkbox
-                                checked={selectedStudents.includes(student.student_id)}
-                                onChange={() => handleStudentToggle(student.student_id)}
-                              />
-                            </TableCell>
-                          )}
+                    {studentList?.length > 0 ? (
+                      studentList.map((student) => (
+                        <TableRow key={student.userId}>
+                          <TableCell>{student.userId}</TableCell>
+                          <TableCell>{student.name}</TableCell>
+                          <TableCell>{student.trainingStatus}</TableCell>
                         </TableRow>
                       ))
                     ) : (
