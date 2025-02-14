@@ -403,7 +403,7 @@ export default function OrderTable({ trainingData }) {
             </>
           )}
 
-          {selectedTraining?.trainingStatus === 'OPEN' && (
+          {userRole !== 'MANAGER' && selectedTraining?.trainingStatus === 'OPEN' && (
             <Button onClick={() => handleUpdateStatus('Ended')} variant="contained" color="primary">
               End Training
             </Button>
