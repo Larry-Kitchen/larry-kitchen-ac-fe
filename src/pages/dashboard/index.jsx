@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import MainCard from 'components/MainCard';
 import OrdersTable from './OrdersTable';
 import { Formik, Field, Form, ErrorMessage } from "formik";
+import { ToastContainer, toast } from 'react-toastify';
 import * as Yup from "yup";
 
 // avatar style
@@ -48,6 +49,7 @@ export default function DashboardDefault() {
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
   const userToken = localStorage.getItem('sessionToken');
+  const notify = () => toast("Training berhasil dibuat!");
 
   const locations = ["Carmy 1", "Carmy 2", "Sydney", "Marcus"];
   const [open, setOpen] = useState(false);
@@ -119,6 +121,7 @@ export default function DashboardDefault() {
 
       const data = await response.json();
       console.log(data);
+      console.log(activeToast);
 
       if (!response.ok) {
         throw new Error(data.message || 'Something went wrong');
@@ -127,6 +130,7 @@ export default function DashboardDefault() {
       setErrors({ submit: error.message });
     } finally {
       setSubmitting(false);
+      notify()
       handleClose()
     }
   };
@@ -149,6 +153,16 @@ export default function DashboardDefault() {
           gap: "20px"
         }}
       >
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          newestOnTop={false}
+          closeOnClick={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
         <Grid
           container
           rowSpacing={4.5}
